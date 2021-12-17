@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import utilities.Filter;
+import utilities.FilterResolver;
 import utilities.GreyScale;
 
 import java.io.File;
@@ -17,10 +18,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.masnik.MenuConstants.END;
-import static org.masnik.MenuConstants.START;
+import static org.masnik.MenuConstants.*;
 
 public class CoreBot extends TelegramLongPollingBot {
+    private String currentFileId;
+
     public static final Logger LOGGER = LoggerFactory.getLogger(CoreBot.class);
 
     private CoreBot() {
@@ -94,16 +96,15 @@ public class CoreBot extends TelegramLongPollingBot {
             if (updateMessage.hasPhoto()) {
                 LOGGER.info("update message has photo");
                 List<PhotoSize> photos = updateMessage.getPhoto();
-                String fileId = Collections.max(photos, Comparator.comparing(PhotoSize::getFileSize)).getFileId();
-                GetFile getFile = new GetFile();
-                getFile.setFileId(fileId);
+                this.currentFileId = Collections.max(photos, Comparator.comparing(PhotoSize::getFileSize)).getFileId();
+                GetFile getFile = new GetFile(currentFileId);
                 try {
                     String filePath = execute(getFile).getFilePath();
                     File file = downloadFile(filePath);
-                    Filter greyScale = new GreyScale();
+                    Filter filter = FilterResolver.resolve(GREY_SCALE);
 
                     long currentTimeMillis = System.currentTimeMillis();
-                    file = greyScale.apply(file);
+                    file = filter.apply(file);
                     LOGGER.info("Applying a filter to photo took {} ms", System.currentTimeMillis() - currentTimeMillis);
 
                     InputFile inputFile = new InputFile(file);

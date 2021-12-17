@@ -17,13 +17,13 @@ public class GreyScale implements Filter {
         int width = image.getWidth();
         int height = image.getHeight();
 
-        grey(image, width, height);
+        makeGreyScale(image, width, height);
 
         ImageIO.write(image, "png", input);
         return input;
     }
 
-    private void grey(BufferedImage image, int width, int height) {
+    private void makeGreyScale(BufferedImage image, int width, int height) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int pixel = image.getRGB(x, y);

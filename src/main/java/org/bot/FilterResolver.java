@@ -1,6 +1,11 @@
-package filter;
+package org.bot;
 
-import static org.masnik.MenuConstants.*;
+import filter.Blur;
+import filter.Filter;
+import filter.GaussianBlur;
+import filter.GreyScale;
+
+import static org.bot.MenuConstants.*;
 
 public class FilterResolver {
     public static Filter resolve(String filterName) {

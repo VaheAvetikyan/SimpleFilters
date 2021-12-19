@@ -1,7 +1,6 @@
-package org.masnik;
+package org.bot;
 
 import filter.Filter;
-import filter.FilterResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -17,7 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import static org.masnik.MenuConstants.*;
+import static org.bot.MenuConstants.*;
 
 public class CoreBot extends TelegramLongPollingBot {
     private final Map<String, String> userFiles = new HashMap<>();
@@ -62,30 +61,9 @@ public class CoreBot extends TelegramLongPollingBot {
                 String messageText = updateMessage.getText();
 
                 switch (messageText) {
-                    case GREY_SCALE -> {
-                        GetFile getFile = new GetFile(userFiles.get(username));
-                        try {
-                            String filePath = execute(getFile).getFilePath();
-                            File file = downloadFile(filePath);
-                            Filter filter = FilterResolver.resolve(GREY_SCALE);
-
-                            long currentTimeMillis = System.currentTimeMillis();
-                            file = filter.apply(file);
-                            LOGGER.info("Applying a filter to photo took {} ms", System.currentTimeMillis() - currentTimeMillis);
-
-                            InputFile inputFile = new InputFile(file);
-                            SendPhoto photo = SendPhoto
-                                    .builder()
-                                    .chatId(String.valueOf(chatId))
-                                    .photo(inputFile)
-                                    .build();
-                            execute(photo);
-                        } catch (TelegramApiException | IOException e) {
-                            LOGGER.error(e.getMessage());
-                        }
-                    }
+                    case GREY_SCALE -> applyFilterAndSend(username, chatId, GREY_SCALE);
                     case GAUSSIAN_BLUR -> LOGGER.info("GAUSSIAN_BLUR selected");
-                    case BLUR -> LOGGER.info("BLUR selected");
+                    case BLUR -> applyFilterAndSend(username, chatId, BLUR);
                     case START -> {
                         SendMessage message = SendMessage
                                 .builder()
@@ -107,6 +85,7 @@ public class CoreBot extends TelegramLongPollingBot {
                         List<KeyboardRow> keyboardRowList = new ArrayList<>();
                         KeyboardRow row = new KeyboardRow();
                         row.add(GREY_SCALE);
+                        row.add(BLUR);
                         row.add(GAUSSIAN_BLUR);
                         keyboardRowList.add(row);
                         ReplyKeyboardMarkup keyboardMarkup = ReplyKeyboardMarkup
@@ -121,6 +100,7 @@ public class CoreBot extends TelegramLongPollingBot {
                             LOGGER.error(e.getMessage());
                         }
                     }
+                    default -> LOGGER.info("{}", messageText);
                 }
             }
             if (updateMessage.hasDocument()) {
@@ -154,6 +134,29 @@ public class CoreBot extends TelegramLongPollingBot {
                     LOGGER.error(e.getMessage());
                 }
             }
+        }
+    }
+
+    private void applyFilterAndSend(String username, long chatId, String filterName) {
+        GetFile getFile = new GetFile(userFiles.get(username));
+        try {
+            String filePath = execute(getFile).getFilePath();
+            File file = downloadFile(filePath);
+            Filter filter = FilterResolver.resolve(filterName);
+
+            long currentTimeMillis = System.currentTimeMillis();
+            file = filter.apply(file);
+            LOGGER.info("Applying {} to photo took {} ms", filterName, System.currentTimeMillis() - currentTimeMillis);
+
+            InputFile inputFile = new InputFile(file);
+            SendPhoto photo = SendPhoto
+                    .builder()
+                    .chatId(String.valueOf(chatId))
+                    .photo(inputFile)
+                    .build();
+            execute(photo);
+        } catch (TelegramApiException | IOException e) {
+            LOGGER.error(e.getMessage());
         }
     }
 }

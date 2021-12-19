@@ -11,21 +11,17 @@ public class GreyScale implements Filter {
 
     @Override
     public File apply(File input) throws IOException {
-        return greyscale(input);
-    }
-
-    public File greyscale(File input) throws IOException {
         BufferedImage image = ImageIO.read(input);
         int width = image.getWidth();
         int height = image.getHeight();
 
-        makeGreyScale(image, width, height);
+        greyscaleImage(image, width, height);
 
         ImageIO.write(image, "png", input);
         return input;
     }
 
-    private void makeGreyScale(BufferedImage image, int width, int height) {
+    private void greyscaleImage(BufferedImage image, int width, int height) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int pixel = image.getRGB(x, y);

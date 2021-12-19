@@ -1,6 +1,6 @@
-package utilities;
+package filter.utilities;
 
-class ColorUtil {
+public class ColorUtil {
     private int RGB;
 
     private int alpha;

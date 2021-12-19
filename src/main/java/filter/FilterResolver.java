@@ -1,12 +1,12 @@
-package utilities;
+package filter;
 
-import static org.masnik.MenuConstants.GAUSSIAN_BLUR;
-import static org.masnik.MenuConstants.GREY_SCALE;
+import static org.masnik.MenuConstants.*;
 
 public class FilterResolver {
     public static Filter resolve(String filterName) {
         return switch (filterName) {
             case GREY_SCALE -> new GreyScale();
+            case BLUR -> new Blur();
             case GAUSSIAN_BLUR -> new GaussianBlur();
             default -> throw new IllegalArgumentException("Unexpected value: " + filterName);
         };

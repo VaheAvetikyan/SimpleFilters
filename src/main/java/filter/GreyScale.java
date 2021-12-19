@@ -1,4 +1,6 @@
-package utilities;
+package filter;
+
+import filter.utilities.ColorUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

@@ -1,4 +1,4 @@
-package utilities;
+package filter.utilities;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

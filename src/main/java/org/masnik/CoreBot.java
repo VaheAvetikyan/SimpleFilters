@@ -1,5 +1,7 @@
 package org.masnik;
 
+import filter.Filter;
+import filter.FilterResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -7,21 +9,18 @@ import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.*;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import utilities.Filter;
-import utilities.FilterResolver;
-import utilities.GreyScale;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static org.masnik.MenuConstants.*;
 
 public class CoreBot extends TelegramLongPollingBot {
-    private String currentFileId;
+    private final Map<String, String> userFiles = new HashMap<>();
 
     public static final Logger LOGGER = LoggerFactory.getLogger(CoreBot.class);
 
@@ -42,39 +41,86 @@ public class CoreBot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         String token = System.getenv("BOT_TOKEN");
-        LOGGER.info("Bot username: {}", token);
+        LOGGER.info("Bot token: {}", token);
         return token;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage()) {
+            String username = update.getMessage().getFrom().getUserName();
             LOGGER.info("update message sent from User({}, {}) userName({})",
                     update.getMessage().getFrom().getFirstName(),
                     update.getMessage().getFrom().getLastName(),
-                    update.getMessage().getFrom().getUserName()
+                    username
             );
 
             Message updateMessage = update.getMessage();
             long chatId = updateMessage.getChatId();
             if (updateMessage.hasText()) {
                 LOGGER.info("update message has text");
+                String messageText = updateMessage.getText();
 
-                String messageText = switch (updateMessage.getText()) {
-                    case START -> "Hi, Welcome";
-                    case END -> "GoodBye";
-                    default -> "այոոոո";
-                };
-                SendMessage message = SendMessage
-                        .builder()
-                        .chatId(String.valueOf(chatId))
-                        .text(messageText)
-                        .build();
+                switch (messageText) {
+                    case GREY_SCALE -> {
+                        GetFile getFile = new GetFile(userFiles.get(username));
+                        try {
+                            String filePath = execute(getFile).getFilePath();
+                            File file = downloadFile(filePath);
+                            Filter filter = FilterResolver.resolve(GREY_SCALE);
 
-                try {
-                    execute(message);
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                            long currentTimeMillis = System.currentTimeMillis();
+                            file = filter.apply(file);
+                            LOGGER.info("Applying a filter to photo took {} ms", System.currentTimeMillis() - currentTimeMillis);
+
+                            InputFile inputFile = new InputFile(file);
+                            SendPhoto photo = SendPhoto
+                                    .builder()
+                                    .chatId(String.valueOf(chatId))
+                                    .photo(inputFile)
+                                    .build();
+                            execute(photo);
+                        } catch (TelegramApiException | IOException e) {
+                            LOGGER.error(e.getMessage());
+                        }
+                    }
+                    case GAUSSIAN_BLUR -> LOGGER.info("GAUSSIAN_BLUR selected");
+                    case BLUR -> LOGGER.info("BLUR selected");
+                    case START -> {
+                        SendMessage message = SendMessage
+                                .builder()
+                                .chatId(String.valueOf(chatId))
+                                .text("Send a photo to the bot")
+                                .build();
+                        try {
+                            execute(message);
+                        } catch (TelegramApiException e) {
+                            LOGGER.error(e.getMessage());
+                        }
+                    }
+                    case FILTER_MENU -> {
+                        SendMessage message = SendMessage
+                                .builder()
+                                .chatId(String.valueOf(chatId))
+                                .text("Select one of the options in menu to apply a filter: ")
+                                .build();
+                        List<KeyboardRow> keyboardRowList = new ArrayList<>();
+                        KeyboardRow row = new KeyboardRow();
+                        row.add(GREY_SCALE);
+                        row.add(GAUSSIAN_BLUR);
+                        keyboardRowList.add(row);
+                        ReplyKeyboardMarkup keyboardMarkup = ReplyKeyboardMarkup
+                                .builder()
+                                .resizeKeyboard(true)
+                                .keyboard(keyboardRowList)
+                                .build();
+                        message.setReplyMarkup(keyboardMarkup);
+                        try {
+                            execute(message);
+                        } catch (TelegramApiException e) {
+                            LOGGER.error(e.getMessage());
+                        }
+                    }
                 }
             }
             if (updateMessage.hasDocument()) {
@@ -90,32 +136,22 @@ public class CoreBot extends TelegramLongPollingBot {
                 try {
                     execute(message);
                 } catch (TelegramApiException e) {
-                    e.printStackTrace();
+                    LOGGER.error(e.getMessage());
                 }
             }
             if (updateMessage.hasPhoto()) {
                 LOGGER.info("update message has photo");
                 List<PhotoSize> photos = updateMessage.getPhoto();
-                this.currentFileId = Collections.max(photos, Comparator.comparing(PhotoSize::getFileSize)).getFileId();
-                GetFile getFile = new GetFile(currentFileId);
+                userFiles.put(username, Collections.max(photos, Comparator.comparing(PhotoSize::getFileSize)).getFileId());
+                SendMessage message = SendMessage
+                        .builder()
+                        .chatId(String.valueOf(chatId))
+                        .text("type /filterMenu for filter options")
+                        .build();
                 try {
-                    String filePath = execute(getFile).getFilePath();
-                    File file = downloadFile(filePath);
-                    Filter filter = FilterResolver.resolve(GREY_SCALE);
-
-                    long currentTimeMillis = System.currentTimeMillis();
-                    file = filter.apply(file);
-                    LOGGER.info("Applying a filter to photo took {} ms", System.currentTimeMillis() - currentTimeMillis);
-
-                    InputFile inputFile = new InputFile(file);
-                    SendPhoto photo = SendPhoto
-                            .builder()
-                            .chatId(String.valueOf(chatId))
-                            .photo(inputFile)
-                            .build();
-                    execute(photo);
-                } catch (TelegramApiException | IOException e) {
-                    e.printStackTrace();
+                    execute(message);
+                } catch (TelegramApiException e) {
+                    LOGGER.error(e.getMessage());
                 }
             }
         }

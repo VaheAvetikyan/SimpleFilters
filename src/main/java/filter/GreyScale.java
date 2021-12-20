@@ -32,9 +32,9 @@ public class GreyScale implements Filter {
 
                 int average = (red + green + blue) / 3;
 
-                color.setRGB(average, average, average);
+                ColorUtil newColor = new ColorUtil(average, average, average);
 
-                image.setRGB(x, y, color.getRGB());
+                image.setRGB(x, y, newColor.getRGB());
             }
         }
     }

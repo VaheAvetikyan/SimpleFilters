@@ -46,63 +46,35 @@ class ColorUtilTest {
     }
 
     @Test
-    void setAlpha() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> colorUtil.setAlpha(-10));
-        colorUtil.setAlpha(10);
-        Assertions.assertEquals(10, colorUtil.getAlpha());
-    }
-
-    @Test
-    void setRed() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> colorUtil.setRed(-10));
-        colorUtil.setRed(10);
-        Assertions.assertEquals(10, colorUtil.getRed());
-    }
-
-    @Test
-    void setGreen() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> colorUtil.setGreen(-10));
-        colorUtil.setGreen(10);
-        Assertions.assertEquals(10, colorUtil.getGreen());
-    }
-
-    @Test
-    void setBlue() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> colorUtil.setBlue(-10));
-        colorUtil.setBlue(10);
-        Assertions.assertEquals(10, colorUtil.getBlue());
-    }
-
-    @Test
     void getRGB() {
         Assertions.assertEquals(-13148401, colorUtil.getRGB());
     }
 
     @Test
     void setRGB() {
-        colorUtil.setRGB(-16755216);
-        Assertions.assertEquals(-16755216, colorUtil.getRGB());
-        Assertions.assertEquals(255, colorUtil.getAlpha());
-        Assertions.assertEquals(0, colorUtil.getRed());
-        Assertions.assertEquals(85, colorUtil.getGreen());
-        Assertions.assertEquals(240, colorUtil.getBlue());
+        ColorUtil color1 = new ColorUtil(-16755216);
+        Assertions.assertEquals(-16755216, color1.getRGB());
+        Assertions.assertEquals(255, color1.getAlpha());
+        Assertions.assertEquals(0, color1.getRed());
+        Assertions.assertEquals(85, color1.getGreen());
+        Assertions.assertEquals(240, color1.getBlue());
 
-        colorUtil.setRGB(-6632960);
-        Assertions.assertEquals(-6632960, colorUtil.getRGB());
-        Assertions.assertEquals(255, colorUtil.getAlpha());
-        Assertions.assertEquals(154, colorUtil.getRed());
-        Assertions.assertEquals(202, colorUtil.getGreen());
-        Assertions.assertEquals(0, colorUtil.getBlue());
+        ColorUtil color2 = new ColorUtil(-6632960);
+        Assertions.assertEquals(-6632960, color2.getRGB());
+        Assertions.assertEquals(255, color2.getAlpha());
+        Assertions.assertEquals(154, color2.getRed());
+        Assertions.assertEquals(202, color2.getGreen());
+        Assertions.assertEquals(0, color2.getBlue());
 
-        colorUtil.setRGB(255, 154, 202, 0);
-        Assertions.assertEquals(-6632960, colorUtil.getRGB());
+        ColorUtil color3 = new ColorUtil(255, 154, 202, 0);
+        Assertions.assertEquals(-6632960, color3.getRGB());
 
-        colorUtil.setRGB(1000000000);
-        Assertions.assertEquals(-6632960, colorUtil.getRGB());
-        Assertions.assertEquals(59, colorUtil.getAlpha());
-        Assertions.assertEquals(154, colorUtil.getRed());
-        Assertions.assertEquals(202, colorUtil.getGreen());
-        Assertions.assertEquals(0, colorUtil.getBlue());
+        ColorUtil color4 = new ColorUtil(1000000000);
+        Assertions.assertEquals(-6632960, color4.getRGB());
+        Assertions.assertEquals(59, color4.getAlpha());
+        Assertions.assertEquals(154, color4.getRed());
+        Assertions.assertEquals(202, color4.getGreen());
+        Assertions.assertEquals(0, color4.getBlue());
     }
 
     @Test

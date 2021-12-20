@@ -24,27 +24,25 @@ public class Blur implements Filter {
         BufferedImage tempImg = new BufferedImage(width, height, image.getType());
         for (int w = 0; w < width; w++) {
             for (int h = 0; h < height; h++) {
-                int countPixels = 0, averageRed = 0, averageGreen = 0, averageBlue = 0;
-                for (int i = -1; i <= 1; i++) {
-                    int x = w + i;
-                    if (x >= 0 && x < width) {
-                        for (int j = -1; j <= 1; j++) {
-                            int y = h + j;
-                            if (y >= 0 && y < height) {
-                                int pixel = image.getRGB(x, y);
-                                ColorUtil color = new ColorUtil(pixel);
-                                countPixels++;
-                                averageRed += color.getRed();
-                                averageGreen += color.getGreen();
-                                averageBlue += color.getBlue();
-                            }
-                        }
-                    }
-                }
-                ColorUtil color = new ColorUtil(averageRed / countPixels, averageGreen / countPixels, averageBlue / countPixels);
+                ColorUtil color = getNewColor(image, width, height, w, h);
                 tempImg.setRGB(w, h, color.getRGB());
             }
         }
         return tempImg;
+    }
+
+    private ColorUtil getNewColor(BufferedImage image, int width, int height, int x, int y) {
+        int countPixels = 0, averageAlpha = 0, averageRed = 0, averageGreen = 0, averageBlue = 0;
+        for (int i = x - 1 > 0 ? -1 : 0; i <= 1 && x + i < width; i++) {
+            for (int j = y - 1 > 0 ? -1 : 0; j <= 1 && y + j < height; j++) {
+                ColorUtil color = new ColorUtil(image.getRGB(x + i, y + j));
+                countPixels++;
+                averageAlpha += color.getAlpha();
+                averageRed += color.getRed();
+                averageGreen += color.getGreen();
+                averageBlue += color.getBlue();
+            }
+        }
+        return new ColorUtil(averageAlpha / countPixels, averageRed / countPixels, averageGreen / countPixels, averageBlue / countPixels);
     }
 }

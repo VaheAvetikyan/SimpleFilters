@@ -32,17 +32,17 @@ public class Blur implements Filter {
     }
 
     private ColorUtil getNewColor(BufferedImage image, int width, int height, int x, int y) {
-        int countPixels = 0, averageAlpha = 0, averageRed = 0, averageGreen = 0, averageBlue = 0;
+        int count = 0, avgAlpha = 0, avgRed = 0, avgGreen = 0, avgBlue = 0;
         for (int i = x - 1 > 0 ? -1 : 0; i <= 1 && x + i < width; i++) {
             for (int j = y - 1 > 0 ? -1 : 0; j <= 1 && y + j < height; j++) {
                 ColorUtil color = new ColorUtil(image.getRGB(x + i, y + j));
-                countPixels++;
-                averageAlpha += color.getAlpha();
-                averageRed += color.getRed();
-                averageGreen += color.getGreen();
-                averageBlue += color.getBlue();
+                count++;
+                avgAlpha += color.getAlpha();
+                avgRed += color.getRed();
+                avgGreen += color.getGreen();
+                avgBlue += color.getBlue();
             }
         }
-        return new ColorUtil(averageAlpha / countPixels, averageRed / countPixels, averageGreen / countPixels, averageBlue / countPixels);
+        return new ColorUtil(avgAlpha / count, avgRed / count, avgGreen / count, avgBlue / count);
     }
 }

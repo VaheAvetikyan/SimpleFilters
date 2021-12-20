@@ -22,19 +22,20 @@ public class Blur implements Filter {
 
     private BufferedImage blurImage(BufferedImage image, int width, int height) {
         BufferedImage tempImg = new BufferedImage(width, height, image.getType());
+        int radius = 3;
         for (int w = 0; w < width; w++) {
             for (int h = 0; h < height; h++) {
-                ColorUtil color = getNewColor(image, width, height, w, h);
+                ColorUtil color = getNewColor(image, width, height, w, h, radius);
                 tempImg.setRGB(w, h, color.getRGB());
             }
         }
         return tempImg;
     }
 
-    private ColorUtil getNewColor(BufferedImage image, int width, int height, int x, int y) {
+    private ColorUtil getNewColor(BufferedImage image, int width, int height, int x, int y, int radius) {
         int count = 0, avgAlpha = 0, avgRed = 0, avgGreen = 0, avgBlue = 0;
-        for (int i = x - 1 > 0 ? -1 : 0; i <= 1 && x + i < width; i++) {
-            for (int j = y - 1 > 0 ? -1 : 0; j <= 1 && y + j < height; j++) {
+        for (int i = x - radius > 0 ? -radius : 0; i <= radius && x + i < width; i++) {
+            for (int j = y - radius > 0 ? -radius : 0; j <= radius && y + j < height; j++) {
                 ColorUtil color = new ColorUtil(image.getRGB(x + i, y + j));
                 count++;
                 avgAlpha += color.getAlpha();

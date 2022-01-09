@@ -62,8 +62,9 @@ public class CoreBot extends TelegramLongPollingBot {
 
                 switch (messageText) {
                     case GREY_SCALE -> applyFilterAndSend(username, chatId, GREY_SCALE);
-                    case GAUSSIAN_BLUR -> LOGGER.info("GAUSSIAN_BLUR selected");
+                    case GAUSSIAN_BLUR -> applyFilterAndSend(username, chatId, GAUSSIAN_BLUR);
                     case BLUR -> applyFilterAndSend(username, chatId, BLUR);
+                    case ROTATE -> applyFilterAndSend(username, chatId, ROTATE);
                     case START -> {
                         SendMessage message = SendMessage
                                 .builder()
@@ -85,9 +86,12 @@ public class CoreBot extends TelegramLongPollingBot {
                         List<KeyboardRow> keyboardRowList = new ArrayList<>();
                         KeyboardRow row = new KeyboardRow();
                         row.add(GREY_SCALE);
-                        row.add(BLUR);
-                        row.add(GAUSSIAN_BLUR);
+                        row.add(ROTATE);
                         keyboardRowList.add(row);
+                        KeyboardRow row2 = new KeyboardRow();
+                        row2.add(BLUR);
+                        row2.add(GAUSSIAN_BLUR);
+                        keyboardRowList.add(row2);
                         ReplyKeyboardMarkup keyboardMarkup = ReplyKeyboardMarkup
                                 .builder()
                                 .resizeKeyboard(true)

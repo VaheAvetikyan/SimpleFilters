@@ -1,9 +1,6 @@
 package org.bot;
 
-import filter.Blur;
-import filter.Filter;
-import filter.GaussianBlur;
-import filter.GreyScale;
+import filter.*;
 
 import static org.bot.MenuConstants.*;
 
@@ -13,6 +10,7 @@ public class FilterResolver {
             case GREY_SCALE -> new GreyScale();
             case BLUR -> new Blur();
             case GAUSSIAN_BLUR -> new GaussianBlur();
+            case ROTATE -> new Rotate();
             default -> throw new IllegalArgumentException("Unexpected value: " + filterName);
         };
     }

@@ -9,4 +9,5 @@ public class MenuConstants {
     public static final String GREY_SCALE = "/greyScale";
     public static final String BLUR = "/blur";
     public static final String GAUSSIAN_BLUR = "/gaussianBlur";
+    public static final String ROTATE = "/rotate";
 }

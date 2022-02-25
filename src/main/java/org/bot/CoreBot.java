@@ -1,6 +1,7 @@
 package org.bot;
 
 import filter.Filter;
+import org.bot.persistance.services.UserFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -14,13 +15,14 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import static org.bot.MenuConstants.*;
 
 public class CoreBot extends TelegramLongPollingBot {
-    private final Map<String, String> userFiles = new HashMap<>();
-
     public static final Logger LOGGER = LoggerFactory.getLogger(CoreBot.class);
 
     private CoreBot() {
@@ -126,7 +128,11 @@ public class CoreBot extends TelegramLongPollingBot {
             if (updateMessage.hasPhoto()) {
                 LOGGER.info("update message has photo");
                 List<PhotoSize> photos = updateMessage.getPhoto();
-                userFiles.put(username, Collections.max(photos, Comparator.comparing(PhotoSize::getFileSize)).getFileId());
+                try (UserFileService userFileService = new UserFileService()) {
+                    userFileService.createUserFile(username, Collections.max(photos, Comparator.comparing(PhotoSize::getFileSize)).getFileId());
+                } catch (Exception e) {
+                    LOGGER.error(e.getMessage());
+                }
                 SendMessage message = SendMessage
                         .builder()
                         .chatId(String.valueOf(chatId))
@@ -142,7 +148,13 @@ public class CoreBot extends TelegramLongPollingBot {
     }
 
     private void applyFilterAndSend(String username, long chatId, String filterName) {
-        GetFile getFile = new GetFile(userFiles.get(username));
+        String fileId = "";
+        try (UserFileService userFileService = new UserFileService()) {
+            fileId = userFileService.getUserFile(username);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+        GetFile getFile = new GetFile(fileId);
         try {
             String filePath = execute(getFile).getFilePath();
             File file = downloadFile(filePath);

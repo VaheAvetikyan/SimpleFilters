@@ -1,0 +1,31 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url = uri('https://repo.maven.apache.org/maven2/')
+    }
+}
+
+dependencies {
+    api 'org.telegram:telegrambots:5.4.0.1'
+    api 'org.slf4j:slf4j-api:1.7.32'
+    api 'org.slf4j:slf4j-simple:1.7.32'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+}
+
+group = 'org.masnik'
+version = '1.0-SNAPSHOT'
+description = 'SimpleFilters'
+java.sourceCompatibility = JavaVersion.VERSION_17
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+        }
+    }
+}

@@ -15,13 +15,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class MessageProcessor {
+public class MessageHandler {
     private final Map<String, String> userFiles = new HashMap<>();
 
     private final CoreBot corebot;
 
-    public MessageProcessor(CoreBot aInCoreBot) {
-        corebot = aInCoreBot;
+    public MessageHandler(CoreBot corebot) {
+        this.corebot = corebot;
     }
 
     public void process(String username, Message updateMessage) {

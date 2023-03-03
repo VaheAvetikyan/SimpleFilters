@@ -2,33 +2,40 @@ package org.masnik.bot.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+@Component
 public class CoreBot extends TelegramLongPollingBot {
     public static final Logger LOGGER = LoggerFactory.getLogger(CoreBot.class);
 
-    private final MessageProcessor messageProcessor = new MessageProcessor(this);
+    private final MessageHandler messageHandler = new MessageHandler(this);
 
-    private CoreBot() {
-    }
+    private final String username;
+    private final String token;
 
-    public static CoreBot getInstance() {
-        return new CoreBot();
+    private CoreBot(TelegramBotsApi telegramBotsApi,
+                    @Value("${telegram-bot.username}") String username,
+                    @Value("${telegram-bot.token}") String token)
+            throws TelegramApiException {
+        this.username = username;
+        this.token = token;
+
+        telegramBotsApi.registerBot(this);
     }
 
     @Override
     public String getBotUsername() {
-        String username = System.getenv("BOT_USERNAME");
-        LOGGER.info("Bot username: {}", username);
         return username;
     }
 
     @Override
     public String getBotToken() {
-        String token = System.getenv("BOT_TOKEN");
-        LOGGER.info("Bot token: {}", token);
         return token;
     }
 
@@ -36,14 +43,10 @@ public class CoreBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.hasMessage()) {
             String username = update.getMessage().getFrom().getUserName();
-            LOGGER.info(
-                    "update message sent from User({}, {}) userName({})",
-                    update.getMessage().getFrom().getFirstName(),
-                    update.getMessage().getFrom().getLastName(),
-                    username);
+            LOGGER.info("update message sent from User({}, {}) userName({})", update.getMessage().getFrom().getFirstName(), update.getMessage().getFrom().getLastName(), username);
 
             Message updateMessage = update.getMessage();
-            messageProcessor.process(username, updateMessage);
+            messageHandler.process(username, updateMessage);
         }
     }
 }

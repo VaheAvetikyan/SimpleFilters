@@ -1,18 +1,18 @@
-# Intellij
-.idea/
-*.iml
-*.iws
-
 # Maven
 log/
 target/
 
 # Gradle
 .gradle/
+.gradle
 /build/
+build/
 **/build/
 !src/**/build/
+!**/src/main/**/build/
+!**/src/test/**/build/
 gradle.properties
+!gradle/wrapper/gradle-wrapper.jar
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -108,3 +108,37 @@ gradle-app.setting
 
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
+
+HELP.md
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/

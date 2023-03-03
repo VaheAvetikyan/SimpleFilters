@@ -1,4 +1,4 @@
-package filter.utilities;
+package org.masnik.bot.filter.util;
 
 public class ColorUtil {
     private int RGB;

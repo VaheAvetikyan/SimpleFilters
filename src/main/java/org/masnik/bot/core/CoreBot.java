@@ -1,6 +1,6 @@
-package org.bot;
+package org.masnik.bot.core;
 
-import filter.Filter;
+import org.masnik.bot.filter.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -16,7 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import static org.bot.MenuConstants.*;
+import static org.masnik.bot.core.MenuConstants.*;
 
 public class CoreBot extends TelegramLongPollingBot {
     private final Map<String, String> userFiles = new HashMap<>();

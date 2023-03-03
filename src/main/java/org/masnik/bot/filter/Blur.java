@@ -1,6 +1,6 @@
-package filter;
+package org.masnik.bot.filter;
 
-import filter.utilities.ColorUtil;
+import org.masnik.bot.filter.util.ColorUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -43,6 +43,9 @@ public class Blur implements Filter {
                 avgGreen += color.getGreen();
                 avgBlue += color.getBlue();
             }
+        }
+        if (count == 0) {
+            count = 1;
         }
         return new ColorUtil(avgAlpha / count, avgRed / count, avgGreen / count, avgBlue / count);
     }

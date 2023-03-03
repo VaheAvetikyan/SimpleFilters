@@ -1,4 +1,4 @@
-package org.bot;
+package org.masnik.bot.core;
 
 public class MenuConstants {
     public static final String START = "/start";

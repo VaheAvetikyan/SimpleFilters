@@ -1,6 +1,6 @@
-package filter;
+package org.masnik.bot.filter;
 
-import filter.utilities.ColorUtil;
+import org.masnik.bot.filter.util.ColorUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class GreyScale implements Filter {
-
     @Override
     public File apply(File input) throws IOException {
         BufferedImage image = ImageIO.read(input);

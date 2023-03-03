@@ -1,8 +1,8 @@
-package org.bot;
+package org.masnik.bot.core;
 
-import filter.*;
+import org.masnik.bot.filter.*;
 
-import static org.bot.MenuConstants.*;
+import static org.masnik.bot.core.MenuConstants.*;
 
 public class FilterResolver {
     public static Filter resolve(String filterName) {

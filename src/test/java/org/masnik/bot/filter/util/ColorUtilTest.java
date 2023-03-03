@@ -1,9 +1,8 @@
-package filter.utilities;
+package org.masnik.bot.filter.util;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 
 class ColorUtilTest {
     ColorUtil colorUtil;

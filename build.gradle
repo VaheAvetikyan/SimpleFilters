@@ -1,6 +1,5 @@
 plugins {
     id 'java-library'
-    id 'maven-publish'
 }
 
 repositories {
@@ -22,10 +21,7 @@ version = '1.0-SNAPSHOT'
 description = 'SimpleFilters'
 java.sourceCompatibility = JavaVersion.VERSION_17
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from(components.java)
-        }
-    }
+
+test {
+    useJUnitPlatform()
 }

@@ -1,4 +1,4 @@
-package org.masnik.bot.filter;
+package org.masnik.bot.operation.filter;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

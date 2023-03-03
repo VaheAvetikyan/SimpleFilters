@@ -1,4 +1,4 @@
-package org.masnik.bot.filter;
+package org.masnik.bot.operation.filter;
 
 import java.io.File;
 import java.io.IOException;

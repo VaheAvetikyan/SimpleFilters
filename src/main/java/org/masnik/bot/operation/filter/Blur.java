@@ -1,6 +1,6 @@
-package org.masnik.bot.filter;
+package org.masnik.bot.operation.filter;
 
-import org.masnik.bot.filter.util.ColorUtil;
+import org.masnik.bot.operation.filter.util.ColorUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -26,17 +26,21 @@ public class Blur implements Filter {
         for (int w = 0; w < width; w++) {
             for (int h = 0; h < height; h++) {
                 ColorUtil color = getNewColor(image, width, height, w, h, radius);
-                tempImg.setRGB(w, h, color.getRGB());
+                tempImg.setRGB(w, h, color.getRgb());
             }
         }
         return tempImg;
     }
 
     private ColorUtil getNewColor(BufferedImage image, int width, int height, int x, int y, int radius) {
-        int count = 0, avgAlpha = 0, avgRed = 0, avgGreen = 0, avgBlue = 0;
+        int count = 0;
+        int avgAlpha = 0;
+        int avgRed = 0;
+        int avgGreen = 0;
+        int avgBlue = 0;
         for (int i = x - radius > 0 ? -radius : 0; i <= radius && x + i < width; i++) {
             for (int j = y - radius > 0 ? -radius : 0; j <= radius && y + j < height; j++) {
-                ColorUtil color = new ColorUtil(image.getRGB(x + i, y + j));
+                ColorUtil color = ColorUtil.create(image.getRGB(x + i, y + j));
                 count++;
                 avgAlpha += color.getAlpha();
                 avgRed += color.getRed();
@@ -47,6 +51,6 @@ public class Blur implements Filter {
         if (count == 0) {
             count = 1;
         }
-        return new ColorUtil(avgAlpha / count, avgRed / count, avgGreen / count, avgBlue / count);
+        return ColorUtil.create(avgAlpha / count, avgRed / count, avgGreen / count, avgBlue / count);
     }
 }

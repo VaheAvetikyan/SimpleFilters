@@ -65,7 +65,7 @@ public class MessageHandler {
                         .chatId(String.valueOf(chatId))
                         .text("Select one of the options in menu to apply a filter: ")
                         .build();
-                message.setReplyMarkup(MenuConstants.getReplyKeyboardMarkup());
+                message.setReplyMarkup(ReplyKeyboard.initMarkup());
                 try {
                     corebot.execute(message);
                 } catch (TelegramApiException e) {
